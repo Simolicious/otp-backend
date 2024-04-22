@@ -1,0 +1,6 @@
+module.exports = {
+    OTP_EXPIRY_SECONDS: 30,
+    OTP_RESEND_MINUTES: 5,
+    OTP_RESEND_LIMIT: 3,
+    OTP_REQUESTS_PER_HOUR: 3,
+}
