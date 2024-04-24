@@ -38,6 +38,7 @@ exports.generateOtp = async (request, response) => {
 
         return response.status(200).send({ message: 'OTP sent successfully' });
     } catch(err) {
+        console.log('Generate error:', err);
         return response.status(500).send({ message: 'Failed to send', error: err });
     }
 }
@@ -55,6 +56,7 @@ exports.validateOtp = async (request, response) => {
         return valid ? response.status(200).send({ message: 'OTP is valid!' }) : response.status(400).send({ message: 'OTP is invalid' });
 
     } catch (err) {
+        console.log('Validate error:', err);
         return response.status(500).send({ message: 'Failed to validate', error: err });
     }
 }
@@ -108,7 +110,7 @@ exports.resendOtp = async (request, response) => {
         }
 
     } catch (err) {
-        console.log('Error', err);
+        console.log('Resend error', err);
         return response.status(500).send({ message: 'Failed to resend', error: err });
     }
 }

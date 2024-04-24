@@ -13,7 +13,10 @@ const generateUniqueOtp = async (email) => {
     
     // finds an OTP in the last 24 hours that has the same code as the one generated. If it matches then it will regenerate the code to keep it unique
     do {
-        otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // randomly generate first digit between 0 and 9 then the remaining 5 digits for the possibility of the OTP starting with 0
+        const randomNumber = Math.floor(Math.random() * 10).toString();
+        const remainingDigits = Math.floor(10000 + Math.random() * 9000).toString();
+        otpCode = randomNumber + remainingDigits;
 
         otpLast24Hours = await Otp.findOne({
             email,
