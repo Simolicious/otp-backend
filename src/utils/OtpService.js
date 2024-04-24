@@ -18,7 +18,7 @@ const generateUniqueOtp = async (email) => {
         otpLast24Hours = await Otp.findOne({
             email,
             code: otpCode,
-            createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000),  $lte: new Date() },
             isUsed: false,
         });
     } while(otpLast24Hours);

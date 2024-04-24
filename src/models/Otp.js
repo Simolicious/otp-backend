@@ -25,6 +25,10 @@ const otpSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    resent: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 const Otp = mongoose.model('Otp', otpSchema);
