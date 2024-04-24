@@ -35,10 +35,11 @@ const generateUniqueOtp = async (email) => {
  */
 const validateOtpCode = async (email, otpCode) => {
     try {
-        const otp = await Otp.findOne({ email, otpCode, isUsed: false}).exec();
+        const otps = await Otp.find({ email, isUsed: false}).sort({ createdAt: -1 }).exec();
 
-        if(otp && otp.expiresAt > new Date()) {
+        if(otps?.length > 0 && otps[0].expiresAt > new Date() && otps[0].code === otpCode) {
             
+            // remove otps associated to the email once it's valid
             await Otp.deleteMany({ email });
 
             return true;

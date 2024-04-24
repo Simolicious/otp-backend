@@ -11,16 +11,6 @@ exports.generateOtp = async (request, response) => {
     }
 
     try {
-        // Checking if the user has requested more than the configured OTP requests per hour
-        const otpCount = await Otp.countDocuments({
-            email,
-            createdAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) },
-        });
-
-        if(otpCount > config.OTP_REQUESTS_PER_HOUR) {
-            return response.status(429).json({ message: 'You have run out of OTPs. Please try again later' });
-        }
-
         const otpCode = await generateUniqueOtp(email);
         const expiresAt = new Date(Date.now() + config.OTP_EXPIRY_SECONDS * 1000);
 
@@ -31,6 +21,18 @@ exports.generateOtp = async (request, response) => {
         });
 
         await otpToSave.save();
+
+        // Checking if the user has requested more than the configured OTP requests per hour
+        let otpCount = await Otp.countDocuments({
+            email,
+            createdAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) },
+        });
+
+        if(otpCount > config.OTP_REQUESTS_PER_HOUR) {
+            await otpToSave.remove();
+            return response.status(429).json({ message: 'You have run out of OTPs. Please try again later' });
+        }
+
         await sendEmail(email, 'Entrostat OTP', `Your OTP: ${otpCode}`);
 
         response.status(200).send({ message: 'OTP sent successfully' });
@@ -49,7 +51,7 @@ exports.validateOtp = async (request, response) => {
     try {
         const valid = await validateOtpCode(email, otp);
 
-        valid ? response.status(200).send({ message: 'OTP is valid!' }) : response.status(400).send({ message: 'OTP is invalid' });
+        return valid ? response.status(200).send({ message: 'OTP is valid!' }) : response.status(400).send({ message: 'OTP is invalid' });
 
     } catch (err) {
         response.status(500).send({ message: 'Failed to validate', error: err });
